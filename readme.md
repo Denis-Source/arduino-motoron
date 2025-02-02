@@ -81,6 +81,16 @@ Can be downloaded from the [official GitHub repository](https://github.com/ardui
 
 > After that CMake should build the project and configuration buttons should appear.
 
+## Hardware setup
+
+### Motoron connection
+
+Motoron M2U550 is connected with software UART (10 is RX, 11 is TX):
+
+![Motoron board](docs/hardware_setup_motoron_board.png)
+![Motoron connection](docs/hardware_setup_motoron_connection.png)
+
+
 ## Usage
 
 To upload the code, use the `flash` configuration. 
@@ -95,7 +105,7 @@ The toolchain should compile, link and flash the board, all build files includin
 
 ## Result
 
-Arduino board should yield similar results:
+Arduino board should send the following messages with hardware UART via USB:
 
 ```text
 Product ID: 0xD4
