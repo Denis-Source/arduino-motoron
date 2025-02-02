@@ -1,0 +1,110 @@
+cmake_minimum_required(VERSION 3.16)
+
+# Project configuration
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
+# Project setup
+project(arduino_motoron LANGUAGES C CXX ASM)
+set(PROJECT_PATH "${CMAKE_SOURCE_DIR}")
+if (NOT COM_PORT)
+    message(FATAL_ERROR "Please set the COM_PORT variable")
+endif ()
+
+
+# Target CPU
+set(TARGET_CPU atmega328p)
+set(TARGET_CPU_CLOCKS 16000000)
+
+# Toolchain
+set(AVR_TOOLCHAIN_PATH "${PROJECT_PATH}/tools/avr_toolchain")
+set(CMAKE_C_COMPILER "${AVR_TOOLCHAIN_PATH}/bin/avr-gcc.exe")
+set(CMAKE_CXX_COMPILER "${AVR_TOOLCHAIN_PATH}/bin/avr-g++.exe")
+set(CMAKE_ASM_COMPILER "${AVR_TOOLCHAIN_PATH}/bin/avr-as.exe")
+set(ELF_TO_HEX_EXECUTABLE "${AVR_TOOLCHAIN_PATH}/bin/avr-objcopy.exe")
+
+# Flashing
+set(AVR_DUDE_EXECUTABLE "${PROJECT_PATH}/tools/avrdude/bin/avrdude.exe")
+set(AVR_DUDE_CONF_PATH "${PROJECT_PATH}/tools/avrdude/etc/avrdude.conf")
+
+# Arduino core library
+set(LIBRARY_ARDUINO_CORE_PATH "${PROJECT_PATH}/external/arduino")
+# Software serial
+set(LIBRARY_SOFTWARE_SERIAL_PATH "${PROJECT_PATH}/external/software-serial")
+# Wire
+set(LIBRARY_WIRE_PATH "${PROJECT_PATH}/external/wire")
+# Motoron
+set(LIBRARY_MOTORON_PATH "${PROJECT_PATH}/external/motoron")
+
+# Pin definitions based on variant
+set(LIBRARY_ARDUINO_VARIANT_PATH "${PROJECT_PATH}/external/variants/standard")
+file(GLOB LIBRARY_FILES
+        ${LIBRARY_ARDUINO_CORE_PATH}/*.c
+        ${LIBRARY_ARDUINO_CORE_PATH}/*.cpp
+        ${LIBRARY_SOFTWARE_SERIAL_PATH}/*.cpp
+        ${LIBRARY_SOFTWARE_SERIAL_PATH}/*.h
+        ${LIBRARY_WIRE_PATH}/*.cpp
+        ${LIBRARY_WIRE_PATH}/*.c
+        ${LIBRARY_MOTORON_PATH}/*.cpp
+        ${LIBRARY_MOTORON_PATH}/*.h
+)
+
+# Executable
+add_executable(${PROJECT_NAME} src/main.cpp ${LIBRARY_FILES})
+target_include_directories(${PROJECT_NAME} PRIVATE
+        ${LIBRARY_ARDUINO_CORE_PATH}
+        ${LIBRARY_ARDUINO_VARIANT_PATH}
+        ${LIBRARY_SOFTWARE_SERIAL_PATH}
+        ${LIBRARY_WIRE_PATH}
+        ${LIBRARY_MOTORON_PATH}
+)
+
+# Preprocessor, compiler and linker flags
+target_compile_features(${PROJECT_NAME} PRIVATE c_std_11 cxx_std_17)
+
+# Preprocessor
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+        "__AVR_${TARGET_CPU}__"
+        "F_CPU=${TARGET_CPU_CLOCKS}L"
+)
+# Compiler
+target_compile_options(${PROJECT_NAME} PRIVATE
+        -mmcu=${TARGET_CPU}
+        -Os
+        -Wall
+        -Wextra
+        -ffunction-sections
+        -fdata-sections
+)
+# Linker
+target_link_options(${PROJECT_NAME} PRIVATE
+        -mmcu=${TARGET_CPU}
+        -Wl,--gc-sections
+        -Wl,-Map=${PROJECT_NAME}.map
+)
+
+# Flashing shortcut
+add_custom_target(flash
+        COMMAND ${AVR_DUDE_EXECUTABLE}
+        -C ${AVR_DUDE_CONF_PATH}
+        -p ${TARGET_CPU}
+        -c arduino
+        -b115200
+        -P ${COM_PORT}
+        -F
+        -D
+        -U
+        flash:w:${PROJECT_BINARY_DIR}/${PROJECT_NAME}.hex:a
+        DEPENDS ${PROJECT_NAME}
+        COMMENT "Flashing to ${TARGET_CPU}"
+)
+
+# Before flashing ELF should be converted to HEX
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${ELF_TO_HEX_EXECUTABLE}
+        -O ihex
+        -R .eeprom
+        ${PROJECT_BINARY_DIR}/${PROJECT_NAME}
+        ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.hex
+        COMMENT "Generating HEX file"
+)
