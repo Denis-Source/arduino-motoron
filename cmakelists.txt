@@ -33,8 +33,6 @@ set(LIBRARY_ARDUINO_CORE_PATH "${PROJECT_PATH}/external/arduino")
 set(LIBRARY_SOFTWARE_SERIAL_PATH "${PROJECT_PATH}/external/software-serial")
 # Wire
 set(LIBRARY_WIRE_PATH "${PROJECT_PATH}/external/wire")
-# Motoron
-set(LIBRARY_MOTORON_PATH "${PROJECT_PATH}/external/motoron")
 
 # Pin definitions based on variant
 set(LIBRARY_ARDUINO_VARIANT_PATH "${PROJECT_PATH}/external/variants/standard")
@@ -45,8 +43,6 @@ file(GLOB LIBRARY_FILES
         ${LIBRARY_SOFTWARE_SERIAL_PATH}/*.h
         ${LIBRARY_WIRE_PATH}/*.cpp
         ${LIBRARY_WIRE_PATH}/*.c
-        ${LIBRARY_MOTORON_PATH}/*.cpp
-        ${LIBRARY_MOTORON_PATH}/*.h
 )
 
 # Executable
@@ -56,7 +52,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${LIBRARY_ARDUINO_VARIANT_PATH}
         ${LIBRARY_SOFTWARE_SERIAL_PATH}
         ${LIBRARY_WIRE_PATH}
-        ${LIBRARY_MOTORON_PATH}
 )
 
 # Preprocessor, compiler and linker flags

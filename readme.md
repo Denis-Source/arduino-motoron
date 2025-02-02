@@ -11,8 +11,6 @@ Arduino Motoron M2U550 integration
 - [Arduino Core](https://github.com/arduino/ArduinoCore-avr)
 - [Software Serial (from Arduino Core)](https://github.com/arduino/ArduinoCore-avr)
 - [Wire (from Arduino Core)](https://github.com/arduino/ArduinoCore-avr)
-- [Motoron Arduino](https://github.com/pololu/motoron-arduino)
-
 
 ### MINGW
 
