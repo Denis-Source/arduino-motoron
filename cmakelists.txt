@@ -27,6 +27,9 @@ set(ELF_TO_HEX_EXECUTABLE "${AVR_TOOLCHAIN_PATH}/bin/avr-objcopy.exe")
 set(AVR_DUDE_EXECUTABLE "${PROJECT_PATH}/tools/avrdude/bin/avrdude.exe")
 set(AVR_DUDE_CONF_PATH "${PROJECT_PATH}/tools/avrdude/etc/avrdude.conf")
 
+# Source directory
+set(SOURCE_PATH "${PROJECT_PATH}/src")
+
 # Arduino core library
 set(LIBRARY_ARDUINO_CORE_PATH "${PROJECT_PATH}/external/arduino")
 # Software serial
@@ -44,10 +47,16 @@ file(GLOB LIBRARY_FILES
         ${LIBRARY_WIRE_PATH}/*.cpp
         ${LIBRARY_WIRE_PATH}/*.c
 )
+set(SOURCE_FILES
+        ${SOURCE_PATH}/main.cpp
+        ${SOURCE_PATH}/motoron.h
+        ${SOURCE_PATH}/motoron.cpp
+)
 
 # Executable
-add_executable(${PROJECT_NAME} src/main.cpp ${LIBRARY_FILES})
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${LIBRARY_FILES})
 target_include_directories(${PROJECT_NAME} PRIVATE
+        src
         ${LIBRARY_ARDUINO_CORE_PATH}
         ${LIBRARY_ARDUINO_VARIANT_PATH}
         ${LIBRARY_SOFTWARE_SERIAL_PATH}
