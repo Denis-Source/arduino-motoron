@@ -1,6 +1,6 @@
-# Arduino Base
+# Arduino Motoron
 
-Arduino project template with CMake configuration.
+Arduino Motoron M2U550 integration
 
 ## Prerequisites
 
@@ -8,7 +8,11 @@ Arduino project template with CMake configuration.
 - MINGW (Windows only)
 - AVR toolchain
 - avrdude
-- Arduino core libraries
+- [Arduino Core](https://github.com/arduino/ArduinoCore-avr)
+- [Software Serial (from Arduino Core)](https://github.com/arduino/ArduinoCore-avr)
+- [Wire (from Arduino Core)](https://github.com/arduino/ArduinoCore-avr)
+- [Motoron Arduino](https://github.com/pololu/motoron-arduino)
+
 
 ### MINGW
 
@@ -89,8 +93,11 @@ The toolchain should compile, link and flash the board, all build files includin
 > 
 > For other boards the CMake configuration is not guaranteed to work and should be changed.
 
-## Requirements
-- [Arduino Core](https://github.com/arduino/ArduinoCore-avr)
-- [Software Serial (from Arduino Core)](https://github.com/arduino/ArduinoCore-avr)
-- [Wire (from Arduino Core)](https://github.com/arduino/ArduinoCore-avr)
-- [Motoron Arduino](https://github.com/pololu/motoron-arduino)
+## Result
+
+Arduino board should yield similar results:
+
+```text
+Product ID: 0xD4
+Firmware Version: 0x102
+```
